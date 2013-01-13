@@ -12,8 +12,6 @@
 			<name>Nick Campion</name>
 			<email>campnic@gmail.com</email>
 			<url>http://blog.nicholascampion.com</url>
-			<organization>DoApp, Inc.</organization>
-			<organizationUrl>http://www.doapps.com</organizationUrl>
 			<timezone>-6</timezone>
 		</developer>
 	</developers>
@@ -103,7 +101,7 @@
 		<dependency>
 			<groupId>android.support</groupId>
 			<artifactId>compatibility-v4</artifactId>
-			<version>r3</version>
+			<version>r7</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -118,14 +116,14 @@
 		<dependency>
 			<groupId>com.j256.ormlite</groupId>
 			<artifactId>ormlite-core</artifactId>
-			<version>4.33</version>
+			<version>4.42</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.j256.ormlite</groupId>
 			<artifactId>ormlite-android</artifactId>
-			<version>4.33</version>
+			<version>4.42</version>
 			<scope>provided</scope>
 		</dependency>
 

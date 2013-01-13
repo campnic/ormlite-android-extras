@@ -4,15 +4,15 @@ import java.sql.SQLException;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.widget.CursorAdapter;
 import android.view.View;
-import android.widget.CursorAdapter;
 
 import com.j256.ormlite.android.AndroidDatabaseResults;
 import com.j256.ormlite.stmt.PreparedQuery;
 
 public abstract class OrmliteCursorAdapter<T> extends CursorAdapter
 {
-    PreparedQuery<T> mQuery;
+    protected PreparedQuery<T> mQuery;
 
     public OrmliteCursorAdapter(Context context, Cursor c, PreparedQuery<T> query)
     {
