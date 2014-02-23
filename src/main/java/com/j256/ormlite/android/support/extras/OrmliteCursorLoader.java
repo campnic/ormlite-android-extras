@@ -23,13 +23,13 @@ public class OrmliteCursorLoader<T> extends AsyncTaskLoader<Cursor> {
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-        Cursor cursor = null;
+        Cursor cursor;
         try
         {
             cursor = mDao.getCursor(mQuery);
         } catch (SQLException e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         if (cursor != null) {
             // Ensure the cursor window is filled
