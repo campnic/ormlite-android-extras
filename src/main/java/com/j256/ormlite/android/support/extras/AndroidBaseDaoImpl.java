@@ -1,17 +1,8 @@
 package com.j256.ormlite.android.support.extras;
 
-import java.lang.ref.WeakReference;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.content.Loader;
-import android.util.Log;
-
 import com.j256.ormlite.android.AndroidCompiledStatement;
 import com.j256.ormlite.dao.BaseDaoImpl;
 import com.j256.ormlite.stmt.PreparedDelete;
@@ -20,6 +11,9 @@ import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.table.DatabaseTableConfig;
+
+import java.sql.SQLException;
+import java.util.*;
 
 public abstract class AndroidBaseDaoImpl<T, ID> extends BaseDaoImpl<T, ID>
 {
@@ -43,15 +37,14 @@ public abstract class AndroidBaseDaoImpl<T, ID> extends BaseDaoImpl<T, ID>
         String idColumnName = getTableInfo().getIdField()
                                             .getColumnName();
         int idColumnIndex = base.getColumnIndex(idColumnName);
-        NoIdCursorWrapper wrapper = new NoIdCursorWrapper(base, idColumnIndex);
-        return wrapper;
+        return new NoIdCursorWrapper(base, idColumnIndex);
     }
 
     public Loader<List<T>> getResultSetLoader(Context context, PreparedQuery<T> query) throws SQLException {
         OrmliteListLoader<T, ID> loader = new OrmliteListLoader<T, ID>(context, this, query);
         synchronized (mLoaders)
         {
-            mLoaders.add(new WeakReference<Loader<?>>(loader));
+            mLoaders.add(loader);
         }
         return loader;
     }
@@ -60,30 +53,24 @@ public abstract class AndroidBaseDaoImpl<T, ID> extends BaseDaoImpl<T, ID>
         OrmliteCursorLoader<T> loader = new OrmliteCursorLoader<T>(context, this, query);
         synchronized (mLoaders)
         {
-            mLoaders.add(new WeakReference<Loader<?>>(loader));
+            mLoaders.add(loader);
         }
         return loader;
     }
 
-    protected List<WeakReference<Loader<?>>> mLoaders = Collections.synchronizedList(new ArrayList<WeakReference<Loader<?>>>()); // new
+    protected final Set<Loader<?>> mLoaders = Collections.newSetFromMap(new WeakHashMap<Loader<?>, Boolean>());
 
-    protected void notifyContentChange() {
-        synchronized (mLoaders)
-        {
-            for (Iterator<WeakReference<Loader<?>>> itr = mLoaders.iterator(); itr.hasNext();)
-            {
-                WeakReference<Loader<?>> weakRef = itr.next();
-                Loader<?> loader = weakRef.get();
-                if (loader == null)
-                {
-                    itr.remove();
-                } else
-                {
-                    loader.onContentChanged();
-                }
-            }
+    public void notifyContentChange() {
+        final List<Loader<?>> mLoadersCopy;
+
+        synchronized (mLoaders) {
+            mLoadersCopy = new ArrayList<Loader<?>>(mLoaders);
         }
+
+        for( Loader<?> loader : mLoadersCopy )
+            loader.onContentChanged();
     }
+
 
     @Override
     public int create(T arg0) throws SQLException {
