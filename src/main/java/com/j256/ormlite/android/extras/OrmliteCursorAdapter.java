@@ -30,7 +30,7 @@ public abstract class OrmliteCursorAdapter<T> extends CursorAdapter
         }
         catch(SQLException e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         
     }
